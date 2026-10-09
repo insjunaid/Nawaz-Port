@@ -1,0 +1,14 @@
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+# Node / build
+node_modules/
+dist/
+screenshots/
+*.log
+.DS_Store
+
+# Local editor / AI-tool settings (not part of the site)
+.claude/
+.mcp.json
+.ignore
