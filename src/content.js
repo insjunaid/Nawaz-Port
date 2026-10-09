@@ -94,8 +94,6 @@ export const about = {
   ],
   signature: 'N. Shariff',
   imageAlt: 'Nawaz Shariff smiling, wearing a striped shirt and clear-framed glasses.',
-  // Shown while the portrait is still a gold engraving (screen readers only).
-  sketchAlt: 'Gold line engraving of Nawaz Shariff, developing into a photograph.',
   factsTitle: 'Account summary',
   facts: [
     { label: 'Role', value: 'Accountant & Sales Head' },
@@ -258,8 +256,8 @@ export const vision = {
   stats: [
     { value: 2, label: "Years supplying the Kingdom's build" },
     { value: 3, label: 'Supply lines — PPE, materials, consumables' },
-    { value: 15, suffix: '+', label: 'Clients served' },
-    { value: 15, suffix: '+', label: 'Project sites supplied' },
+    { value: 100, suffix: '+', label: 'Clients served' },
+    { value: 100, suffix: '+', label: 'Project sites supplied' },
   ],
 }
 

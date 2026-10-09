@@ -1350,9 +1350,6 @@ html.cursor-in .cursor__ring {
   gap: clamp(56px, 7vw, 96px);
 }
 .about-arch {
-  /* Sketch → photo progress (driven by scroll; 1 = finished photo). */
-  --draw: 1;
-  --dev: 1;
   position: relative;
   width: min(100%, 460px);
   aspect-ratio: 4 / 5;
@@ -1372,8 +1369,7 @@ html.cursor-in .cursor__ring {
   background-image: var(--lattice);
   background-size: 58px;
   background-position: center top;
-  /* Brighter while he is still a drawing — like a blueprint behind the ink. */
-  opacity: calc(0.3 - var(--dev) * 0.14);
+  opacity: 0.16;
 }
 .about-arch__glow {
   position: absolute;
@@ -1383,7 +1379,6 @@ html.cursor-in .cursor__ring {
   aspect-ratio: 1;
   translate: -50% -50%;
   background: radial-gradient(circle, rgba(232, 188, 104, 0.3), transparent 62%);
-  opacity: calc(0.35 + var(--dev) * 0.65);
 }
 .about-arch__outline {
   position: absolute;
@@ -1419,56 +1414,6 @@ html.cursor-in .cursor__ring {
   height: 100%;
   object-fit: contain;
   object-position: bottom center;
-}
-/* Sketch → photo layers ------------------------------------------------------ */
-.about-sketch,
-.about-photo,
-.about-pen,
-.about-develop {
-  position: absolute;
-  inset: 0;
-}
-.about-photo img {
-  display: block;
-}
-/* The engraving draws itself from the top down (soft 25% leading edge), and
-   bows out once the photo has fully developed. */
-.about-sketch {
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--draw) * 125% - 25%), transparent calc(var(--draw) * 125%));
-  mask-image: linear-gradient(to bottom, #000 calc(var(--draw) * 125% - 25%), transparent calc(var(--draw) * 125%));
-  opacity: clamp(0, calc((1 - var(--dev)) * 3), 1);
-  filter: drop-shadow(0 0 6px rgba(226, 201, 140, 0.25));
-}
-/* The photograph develops over the drawing, face first. */
-.about-photo {
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--dev) * 140% - 40%), transparent calc(var(--dev) * 140%));
-  mask-image: linear-gradient(to bottom, #000 calc(var(--dev) * 140% - 40%), transparent calc(var(--dev) * 140%));
-}
-/* Light at each front, clipped to his silhouette (the photo's own alpha). */
-.about-pen,
-.about-develop {
-  pointer-events: none;
-  -webkit-mask: url('/images/nawaz-about-520.webp') bottom center / contain no-repeat;
-  mask: url('/images/nawaz-about-520.webp') bottom center / contain no-repeat;
-  mix-blend-mode: screen;
-}
-.about-pen {
-  background: linear-gradient(
-    to bottom,
-    transparent calc(var(--draw) * 125% - 15%),
-    rgba(255, 226, 160, 0.95) calc(var(--draw) * 125% - 12.6%),
-    transparent calc(var(--draw) * 125% - 10%)
-  );
-  opacity: clamp(0, calc(min(var(--draw), 1 - var(--draw)) * 12), 1);
-}
-.about-develop {
-  background: linear-gradient(
-    to bottom,
-    transparent calc(var(--dev) * 140% - 34%),
-    rgba(255, 214, 140, 0.42) calc(var(--dev) * 140% - 20%),
-    transparent calc(var(--dev) * 140% - 6%)
-  );
-  opacity: clamp(0, calc(min(var(--dev), 1 - var(--dev)) * 6), 1);
 }
 .about-arch__caption {
   position: absolute;

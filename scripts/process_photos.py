@@ -13,9 +13,6 @@ Steps:
   4. Trim to the subject's bounding box.
   5. Export the clean, natural-colour transparent PNG (assets/processed/).
   6. Warm grade + soft directional gold rim light → web WebP (2 widths) + PNG.
-  7. Gold "banknote engraving" of the same cutout, pixel-aligned with the photo.
-     On the site the portrait first appears as this engraving and develops into
-     the real photo as you scroll (see src/sections/About.jsx).
 
 Requirements: pip install "rembg[cpu]" pillow numpy scipy
 On Windows with long paths, set NUMBA_CACHE_DIR to a short folder first.
@@ -47,15 +44,11 @@ PHOTOS = {
         "light_dir": (-0.6, -0.8),
         "rim_strength": 0.7,
         "grade_mix": 0.3,
-        # Engraving line spacing per output width, in source pixels. Wider spacing
-        # for the small file keeps lines ≥ ~3 CSS px apart on phones (no moiré).
-        "engrave_spacing": {780: 6.0, 520: 8.5},
     },
 }
 
 # Theme colours (match src/index.css)
 GOLD_HOT = np.array([255, 214, 140]) / 255
-ENGRAVE_GOLD = np.array([226, 201, 140]) / 255  # --gold-soft
 
 # Grade ramp: luminance -> colour. Shadows sink into ink-emerald,
 # mids turn bronze, highlights become warm off-white.
@@ -149,42 +142,6 @@ def rim_light(rgb: np.ndarray, a: np.ndarray, light_dir, strength: float) -> np.
     return 1 - (1 - rgb) * (1 - rim * GOLD_HOT)
 
 
-def _smoothstep(e0, e1, x):
-    t = np.clip((x - e0) / (e1 - e0), 0, 1)
-    return t * t * (3 - 2 * t)
-
-
-def engraving(fg: np.ndarray, a: np.ndarray, spacing: float) -> np.ndarray:
-    """Banknote-style line engraving → ink coverage 0..1 (gold = light).
-
-    Parallel lines that bend with the large-scale form; each line swells where
-    the photo is bright and thins out in shadow, so the portrait reads as a
-    positive image in gold on a dark ground. Fine contour strokes from a
-    colour-dodge pencil pass add the features (eyes, glasses, smile).
-    """
-    h, w = a.shape
-    lum = fg @ LUMA
-    inside = a > 0.5
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-
-    # Locally normalised brightness so the face keeps its detail.
-    local = ndimage.gaussian_filter(lum, 0.8) - ndimage.gaussian_filter(lum, 36) * 0.5
-    lo, hi = np.percentile(local[inside], 2), np.percentile(local[inside], 99)
-    tone = np.clip((local - lo) / (hi - lo), 0, 1) ** 1.15
-
-    bend = ndimage.gaussian_filter(lum, 14) * 12 + 2.0 * np.sin(xx / 33.0)
-    phase = (yy + bend) / spacing
-    dist = np.abs(phase - np.round(phase))  # 0 on a line's centre, 0.5 between lines
-    half = 0.4 * tone**1.1  # never fully solid: lines stay visible even on the white shirt
-    aa = 0.75 / spacing
-    lines = _smoothstep(half + aa, half - aa, dist) * (tone > 0.05)
-
-    dodge = np.clip(lum / np.maximum(1 - ndimage.gaussian_filter(1 - lum, 6), 1e-3), 0, 1)
-    pencil = np.clip((1 - dodge) * 3.2, 0, 1) ** 0.85
-    outline = np.clip(a - ndimage.grey_erosion(a, size=(4, 4)), 0, 1)
-    return np.clip(np.maximum.reduce([lines * 0.92, pencil * 0.5, outline]), 0, 1) * a
-
-
 def save_rgba(rgb: np.ndarray, a: np.ndarray, path: Path, width: int | None = None, fmt="WEBP", **kw):
     data = np.dstack([np.broadcast_to(rgb, (*a.shape, 3)), a])
     im = Image.fromarray((np.clip(data, 0, 1) * 255 + 0.5).astype(np.uint8), "RGBA")
@@ -223,13 +180,9 @@ def main():
             sizes.append(save_rgba(graded, a, WEB / f"{cfg['out']}-{w}.webp", w, "WEBP", quality=82, method=6))
         save_rgba(graded, a, WEB / f"{cfg['out']}.png", cfg["widths"][1], "PNG", optimize=True)
 
-        # 3. Engraving, same crop and sizes so it sits exactly under the photo.
-        for w, spacing in cfg["engrave_spacing"].items():
-            ink = engraving(fg, a, spacing)
-            save_rgba(ENGRAVE_GOLD, ink, WEB / f"{cfg['out']}-sketch-{w}.webp", w, "WEBP", quality=80, alpha_quality=70, method=6)
 
         meta[cfg["out"]] = {"width": sizes[0][0], "height": sizes[0][1]}
-        print(f"   saved {cfg['out']} {sizes} + sketch")
+        print(f"   saved {cfg['out']} {sizes}")
 
     (WEB / "images.json").write_text(json.dumps(meta, indent=2))
 
