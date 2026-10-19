@@ -93,6 +93,8 @@ export const about = {
     'My work lives where finance meets the field. I build long-term relationships with contractors, run procurement end to end, and keep the books balanced so the business can move fast without losing precision.',
   ],
   signature: 'N. Shariff',
+  // Set to true to show the portrait again (images stay in public/images/).
+  showPhoto: false,
   imageAlt: 'Nawaz Shariff smiling, wearing a striped shirt and clear-framed glasses.',
   factsTitle: 'Account summary',
   facts: [

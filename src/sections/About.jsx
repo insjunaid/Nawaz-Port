@@ -54,7 +54,8 @@ export default function About() {
           </span>
         </h2>
 
-        <div className="about-grid">
+        <div className={`about-grid ${copy.showPhoto ? '' : 'about-grid--no-photo'}`}>
+          {copy.showPhoto && (
           <figure className="about-arch" data-reveal>
             <div className="about-arch__frame" aria-hidden="true">
               <div className="about-arch__lattice" />
@@ -89,6 +90,7 @@ export default function About() {
               <span className="signature">{copy.signature}</span>
             </figcaption>
           </figure>
+          )}
 
           <div className="about-copy">
             <p className="about-lede" data-split>

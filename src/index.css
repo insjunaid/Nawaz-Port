@@ -1458,6 +1458,13 @@ html.cursor-in .cursor__ring {
     grid-column: 3;
     padding-top: 24px;
   }
+  /* Photo hidden (content.js → about.showPhoto): copy sits right, editorial-style. */
+  .about-grid--no-photo .about-copy {
+    grid-column: 1 / -1;
+    width: min(100%, 760px);
+    margin-left: auto;
+    padding-top: 0;
+  }
 }
 
 /* ── 9. 03 · Journey ────────────────────────────────────────────────────── */
